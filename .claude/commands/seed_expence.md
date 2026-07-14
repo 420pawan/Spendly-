@@ -1,14 +1,12 @@
 ---
-description: Seed realistic dummy expenses for a specific user
+description: Seed realistic expenses
 argument-hint: "<user_id> <count> <months>"
-allowed-tools: Read, Bash(python3:*)
+allowed-tools: Bash
 ---
 
-Read database/db.py to understand the expenses table 
-schema, the db connection pattern, and the database 
-file name.
+Run the following command from the project root:
 
-User input: $ARGUMENTS
+venv\Scripts\python.exe scripts\seed_expenses.py $ARGUMENTS
 
 ## Step 1 — Parse arguments
 
