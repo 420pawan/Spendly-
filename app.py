@@ -4,6 +4,11 @@ from flask import Flask, abort, flash, redirect, render_template, request, sessi
 from werkzeug.security import check_password_hash
 
 from database.db import create_user, get_user_by_email, init_db, seed_db
+from werkzeug.security import check_password_hash
+
+from flask import Flask, abort, flash, redirect, render_template, request, session, url_for
+
+from database.db import create_user, get_db, get_user_by_email, init_db, seed_db
 
 app = Flask(__name__)
 app.secret_key = "spendly-development-secret"
