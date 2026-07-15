@@ -35,6 +35,17 @@ def create_user(name: str, email: str, password: str) -> int:
         connection.close()
 
 
+def get_user_by_email(email: str) -> sqlite3.Row | None:
+    """Return the user with the supplied email, if one exists."""
+    connection = get_db()
+    try:
+        return connection.execute(
+            "SELECT * FROM users WHERE email = ?", (email,)
+        ).fetchone()
+    finally:
+        connection.close()
+
+
 def init_db() -> None:
     """Create the application tables if they do not already exist."""
     connection = get_db()
