@@ -18,6 +18,23 @@ def get_db() -> sqlite3.Connection:
     return connection
 
 
+def create_user(name: str, email: str, password: str) -> int:
+    """Create a user with a securely hashed password and return its ID."""
+    connection = get_db()
+    try:
+        cursor = connection.execute(
+            "INSERT INTO users (name, email, password_hash) VALUES (?, ?, ?)",
+            (name, email, generate_password_hash(password)),
+        )
+        connection.commit()
+        return cursor.lastrowid
+    except sqlite3.Error:
+        connection.rollback()
+        raise
+    finally:
+        connection.close()
+
+
 def init_db() -> None:
     """Create the application tables if they do not already exist."""
     connection = get_db()

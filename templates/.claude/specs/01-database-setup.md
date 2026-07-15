@@ -1,49 +1,191 @@
-# Database Setup Implementation Plan
+## 1. Overview
 
-## Goal
+Replace the stub in `database/db.py` with a working SQLite implementation.
 
-Implement the SQLite data layer for Spendly and initialize it when the Flask application starts, without changing the existing route behavior.
+This step establishes the **data layer foundation** for the Spendly application.
 
-## Current State
+All future features (authentication, profile, expense tracking) depend on this being correctly implemented.
 
-- `database/db.py` is a documented stub with no database code.
-- `app.py` defines only placeholder landing, registration, login, and logout routes.
-- No database file or application startup initialization is currently configured.
+---
 
-## Implementation Steps
+## 2. Depends on
 
-1. Implement connection creation in `database/db.py`.
-   - Define a project-root database path for `spendly.db` (or the approved alternative name).
-   - Add `get_db()` using the standard-library `sqlite3` module.
-   - Configure each connection with `sqlite3.Row` as its row factory and enable `PRAGMA foreign_keys = ON` before returning it.
+Nothing — this is the first step.
 
-2. Add idempotent schema initialization in `database/db.py`.
-   - Implement `init_db()` to open a connection and execute `CREATE TABLE IF NOT EXISTS` statements for `users` and `expenses`.
-   - Create `users` with an auto-incrementing primary key, required name/email/password hash fields, a unique email constraint, and a default creation timestamp.
-   - Create `expenses` with an auto-incrementing primary key, required user/amount/category/date fields, an optional description, a default creation timestamp, and a foreign key to `users(id)`.
-   - Commit the schema changes and close the connection reliably.
+---
 
-3. Add safe, repeatable development seed data in `database/db.py`.
-   - Implement `seed_db()` to return immediately when at least one user already exists.
-   - Insert the Demo User with `demo@spendly.com` and a password hash generated from `demo123` via `werkzeug.security.generate_password_hash`.
-   - Insert exactly eight parameterized sample expense records for that user, using the required category names, floating-point amounts, and ISO `YYYY-MM-DD` dates spread through the current month.
-   - Commit inserts and close the connection; avoid duplicate seed data on subsequent runs.
+## 3. Routes
 
-4. Initialize the data layer from `app.py`.
-   - Import `get_db`, `init_db`, and `seed_db` from `database.db`.
-   - On application startup, enter `app.app_context()` and call `init_db()` followed by `seed_db()` before routes are served.
-   - Preserve all current routes and their placeholder responses for this database-only step.
+- No new routes
+- Existing placeholder routes in `app.py` remain unchanged
 
-5. Verify the implementation.
-   - Start the application and confirm the SQLite database file is created without startup errors.
-   - Inspect the schema to confirm all columns, constraints, defaults, and the foreign key are present.
-   - Confirm the demo user has a non-plaintext password hash and exactly eight linked sample expenses.
-   - Run initialization and seeding more than once and confirm record counts do not increase.
-   - Attempt a duplicate email insert and an expense insert for a nonexistent user; confirm SQLite raises the expected integrity errors.
+---
 
-## Constraints
+## 4. Database Schema
 
-- Use `sqlite3` only; do not add an ORM or new dependencies.
-- Use parameterized SQL for every query; do not interpolate values into SQL strings.
-- Enable foreign-key enforcement on every connection.
-- Store expense amounts as `REAL`/floating-point values and dates consistently as `YYYY-MM-DD` text.
+---
+
+### A. users
+
+| Column | Type | Constraints |
+| --- | --- | --- |
+| id | INTEGER | Primary key, autoincrement |
+| name | TEXT | Not null |
+| email | TEXT | Unique, not null |
+| password_hash | TEXT | Not null |
+| created_at | TEXT | Default datetime('now') |
+
+---
+
+### B. expenses
+
+| Column | Type | Constraints |
+| --- | --- | --- |
+| id | INTEGER | Primary key, autoincrement |
+| user_id | INTEGER | Foreign key → users.id, not null |
+| amount | REAL | Not null |
+| category | TEXT | Not null |
+| date | TEXT | Not null (YYYY-MM-DD format) |
+| description | TEXT | Nullable |
+| created_at | TEXT | Default datetime('now') |
+
+---
+
+## 5. Functions to Implement (`database/db.py`)
+
+---
+
+### A. `get_db()`
+
+- Opens connection to `spendly.db` (or `expense_tracker.db`) in project root
+- Sets:
+    - `row_factory = sqlite3.Row`
+    - `PRAGMA foreign_keys = ON`
+- Returns the connection
+
+---
+
+### B. `init_db()`
+
+- Creates both tables using `CREATE TABLE IF NOT EXISTS`
+- Safe to call multiple times
+- Ensures schema is ready before app usage
+
+---
+
+### C. `seed_db()`
+
+- Checks if `users` table already contains data
+    - If yes → return early (no duplication)
+- Inserts one demo user:
+    - name: Demo User
+    - email: demo@spendly.com
+    - password: demo123 (hashed using `werkzeug`)
+- Inserts **8 sample expenses**:
+    - All linked to demo user
+    - Cover multiple categories
+    - Dates spread across current month
+    - At least one expense per category
+
+---
+
+## 6. Changes to `app.py`
+
+- Import:
+    - `get_db`
+    - `init_db`
+    - `seed_db`
+- Call `init_db()` and `seed_db()` inside `app.app_context()` on startup
+- Ensure DB is ready before routes are used
+
+---
+
+## 7. Files to Change
+
+- `database/db.py` → implement all functions
+- `app.py` → add imports and startup calls
+
+---
+
+## 8. Files to Create
+
+- None
+
+---
+
+## 9. Dependencies
+
+- No new pip packages
+- Use:
+    - `sqlite3` (standard library)
+    - `werkzeug.security` (already installed)
+
+---
+
+## 10. Categories (Fixed List)
+
+Use exactly these values:
+
+- Food
+- Transport
+- Bills
+- Health
+- Entertainment
+- Shopping
+- Other
+
+---
+
+## 11. Rules for Implementation
+
+- No ORMs (no SQLAlchemy)
+- Use **parameterized queries only**
+- Never use string formatting in SQL
+- Enable `PRAGMA foreign_keys = ON` on every connection
+- Store `amount` as REAL (float), not INTEGER
+- Hash passwords using:
+    
+    ```
+    fromwerkzeug.securityimportgenerate_password_hash
+    ```
+    
+- `seed_db()` must prevent duplicate inserts
+- Dates must follow **YYYY-MM-DD format consistently**
+
+---
+
+## 12. Expected Behavior
+
+- `get_db()` returns a working connection with:
+    - dictionary-like row access
+    - foreign key enforcement enabled
+- `init_db()`:
+    - creates tables safely
+    - does not fail on repeated runs
+- `seed_db()`:
+    - inserts demo data only once
+    - does not duplicate records on multiple runs
+- Database enforces:
+    - unique email constraint
+    - valid foreign key relationships
+
+---
+
+## 13. Error Handling Expectations
+
+- Inserting duplicate email → should fail (UNIQUE constraint)
+- Inserting expense with invalid `user_id` → should fail (foreign key constraint)
+- Invalid queries → should raise clear errors for debugging
+
+---
+
+## 14. Definition of Done
+
+- [ ]  Database file is created on app startup
+- [ ]  Both tables exist with correct schema and constraints
+- [ ]  Demo user exists with hashed password
+- [ ]  8 sample expenses exist across categories
+- [ ]  No duplicate seed data on repeated runs
+- [ ]  App starts without errors
+- [ ]  Foreign key enforcement works
+- [ ]  All queries use parameterized SQL
