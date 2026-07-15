@@ -8,3 +8,22 @@ __pycache__/
 .claude/plans/
 
 spendly.db
+# Python
+venv/
+__pycache__/
+*.pyc
+
+# Database
+*.db
+
+# Node
+node_modules/
+
+# Environment
+.env
+
+# VS Code
+.vscode/
+
+# Claude generated plans
+.claude/plans/
