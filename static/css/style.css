@@ -536,12 +536,12 @@ a { color: inherit; text-decoration: none; }
 /* ------------------------------------------------------------------ */
 
 
-.profile-page { padding: 4rem 2rem 5rem; }
+.profile-page { padding: 2rem 2rem 5rem; }
 .profile-container { max-width: var(--max-width); margin: 0 auto; }
 .profile-header { margin-bottom: 2rem; }
 .profile-kicker, .section-label { color: var(--accent); font-size: 0.75rem; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; }
 .profile-header h1, .profile-card h2 { font-family: var(--font-display); color: var(--ink); }
-.profile-header h1 { font-size: clamp(2rem, 4vw, 3rem); margin-top: 0.35rem; }
+.profile-header h1 { font-size: clamp(2rem, 4vw, 3rem); margin-top: 0.10rem; }
 .profile-card { background: var(--paper-card); border: 1px solid var(--border); border-radius: var(--radius-md); }
 .user-card { display: flex; align-items: center; gap: 1.25rem; padding: 1.5rem; margin-bottom: 1.5rem; }
 .profile-avatar { align-items: center; background: var(--accent-light); border-radius: 50%; color: var(--accent); display: flex; font-size: 1.25rem; font-weight: 600; height: 4rem; justify-content: center; width: 4rem; }
@@ -614,3 +614,5 @@ a { color: inherit; text-decoration: none; }
     .expense-page { padding: 2.5rem 1rem 3rem; }
     .expense-card { padding: 1.25rem; }
 }
+
+
