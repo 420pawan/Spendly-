@@ -6,6 +6,7 @@ from werkzeug.security import check_password_hash
 
 from database.db import create_user, get_user_by_email, init_db, seed_db
 from database.queries import (
+    delete_expense,
     get_category_breakdown,
     get_expense_by_id,
     get_recent_transactions,
@@ -121,12 +122,7 @@ def profile():
             "date_from": (today - timedelta(days=180)).isoformat(),
             "date_to": today.isoformat(),
         },
-        {
-            "key": "all_time",
-            "label": "All Time",
-            "date_from": None,
-            "date_to": None,
-        },
+        {"key": "all_time", "label": "All Time", "date_from": None, "date_to": None},
     ]
     active_preset = next(
         (
@@ -136,9 +132,7 @@ def profile():
         ),
         None,
     )
-    custom_range_active = bool(
-        date_from and date_to and active_preset is None
-    )
+    custom_range_active = bool(date_from and date_to and active_preset is None)
 
     profile_user = {
         "initials": "PK",
@@ -337,6 +331,19 @@ def edit_expense(id):
         values=values,
         error=None,
     )
+
+
+@app.route("/expenses/<int:id>/delete", methods=["POST"])
+def delete_expense_route(id):
+    if not session.get("user_id"):
+        return redirect(url_for("login"))
+
+    expense = get_expense_by_id(id, session["user_id"])
+    if expense is None:
+        abort(404)
+
+    delete_expense(id, session["user_id"])
+    return redirect(url_for("profile"))
 
 
 if __name__ == "__main__":
