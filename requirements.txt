@@ -1,8 +1,5 @@
 flask==3.1.3
 werkzeug==3.1.6
+gunicorn==23.0.0
 pytest==8.3.5
 pytest-flask==1.3.0
-# to run it open bash and paste 
-# venv\Scripts\activate
-# python app.py
-# you will get the link 

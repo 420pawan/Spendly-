@@ -3,11 +3,16 @@
 from datetime import date
 from pathlib import Path
 import sqlite3
-
+import os
 from werkzeug.security import generate_password_hash
 
 
-DATABASE_PATH = Path(__file__).resolve().parent.parent / "spendly.db"
+DATABASE_PATH = Path(
+    os.environ.get(
+        "DATABASE_PATH",
+        Path(__file__).resolve().parent.parent / "spendly.db",
+    )
+)
 
 
 def get_db() -> sqlite3.Connection:
