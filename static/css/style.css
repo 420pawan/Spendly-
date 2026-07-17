@@ -583,3 +583,13 @@ a { color: inherit; text-decoration: none; }
     .profile-page { padding: 2.5rem 1rem 3rem; }
     .transactions-table th, .transactions-table td { padding-right: 0.75rem; }
 }
+.date-filter { display: flex; align-items: end; justify-content: space-between; gap: 1.25rem; padding: 1.25rem 1.5rem; margin-bottom: 1.5rem; }
+.date-filter-heading { display: flex; flex-direction: column; gap: 0.65rem; }
+.preset-links, .date-range-form { display: flex; align-items: end; flex-wrap: wrap; gap: 0.6rem; }
+.date-preset, .date-apply { border: 1px solid var(--border); border-radius: var(--radius-sm); color: var(--ink-soft); font: inherit; font-size: 0.85rem; padding: 0.5rem 0.8rem; background: var(--paper); cursor: pointer; }
+.date-preset:hover, .date-preset.is-active, .date-apply:hover, .date-apply.is-active { background: var(--accent-light); border-color: var(--accent); color: var(--accent); }
+.date-range-form label { color: var(--ink-muted); display: flex; flex-direction: column; font-size: 0.75rem; gap: 0.25rem; }
+.date-range-form input { background: var(--paper); border: 1px solid var(--border); border-radius: var(--radius-sm); color: var(--ink); font: inherit; font-size: 0.85rem; padding: 0.45rem 0.55rem; }
+.date-range-form input:focus { border-color: var(--accent); outline: none; }
+@media (max-width: 800px) { .date-filter { align-items: stretch; flex-direction: column; } }
+@media (max-width: 600px) { .date-range-form input { width: 100%; } .date-range-form label { flex: 1 1 8rem; } }
