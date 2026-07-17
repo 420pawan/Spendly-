@@ -74,3 +74,26 @@ def get_category_breakdown(user_id: int, date_from: str | None = None, date_to: 
         "percentage": round((row["total"] / overall_total) * 100) if overall_total else 0,
         "class_name": row["category"].lower().replace(" ", "-"),
     } for row in rows]
+
+
+def insert_expense(
+    user_id: int,
+    amount: float,
+    category: str,
+    expense_date: str,
+    description: str | None,
+) -> int:
+    """Create an expense and return its database ID."""
+    connection = get_db()
+    try:
+        cursor = connection.execute(
+            "INSERT INTO expenses (user_id, amount, category, date, description) VALUES (?, ?, ?, ?, ?)",
+            (user_id, amount, category, expense_date, description),
+        )
+        connection.commit()
+        return cursor.lastrowid
+    except Exception:
+        connection.rollback()
+        raise
+    finally:
+        connection.close()
