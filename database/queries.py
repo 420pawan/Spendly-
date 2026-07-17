@@ -179,3 +179,19 @@ def update_expense(
         raise
     finally:
         connection.close()
+
+
+def delete_expense(expense_id: int, user_id: int) -> None:
+    """Delete an expense only when it belongs to the supplied user."""
+    connection = get_db()
+    try:
+        connection.execute(
+            "DELETE FROM expenses WHERE id = ? AND user_id = ?",
+            (expense_id, user_id),
+        )
+        connection.commit()
+    except Exception:
+        connection.rollback()
+        raise
+    finally:
+        connection.close()
