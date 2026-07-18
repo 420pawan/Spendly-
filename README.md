@@ -142,7 +142,7 @@ python app.py
 Open your browser and visit:
 
 ```
-http://127.0.0.1:5001
+[http://127.0.0.1:5001](https://spendly-production-1da2.up.railway.app/)
 ```
 
 ---
